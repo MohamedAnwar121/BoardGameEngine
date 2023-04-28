@@ -11,15 +11,17 @@ const Choices = () => {
         {id: 5, gameName: 'Sudoku'},
         {id: 6, gameName: '8-Queens'}];
     const listItems = listOfGames.map(game =>
-        <button
-            className="btn btn-primary fs-1 my-5 d-block"
-            key={ game.id }
-            style={{width: "20%"}}>
-            <Link className="text-white text-decoration-none" to={`/${game.gameName}`}>{ game.gameName }</Link>
-        </button>
+        <div className="row m-5">
+            <button
+                className="btn fs-1 bg-black rounded-5"
+                key={ game.id }
+                style={{width: "20%", marginLeft: game.id * 100}}>
+                <Link className="text-white text-decoration-none bg-black" to={`/${game.gameName}`}>{ game.gameName }</Link>
+            </button>
+        </div>
     );
 
-    return ( <div className="col-12"> {listItems} </div>  );
+    return ( <div className="col"> {listItems} </div>  );
 };
 
 export default Choices;

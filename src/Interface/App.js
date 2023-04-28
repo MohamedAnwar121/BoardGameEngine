@@ -12,12 +12,21 @@ import UI from "../UI";
 function App() {
 
     const appStyle = {
-        width: "101%"
+        width: "100%",
+        backgroundImage: "url('https://static.vecteezy.com/system/resources/previews/000/697/543/original/chess-rook-wire-frame-polygon-blue-frame-structure-vector.jpg",
+        height: "100vh",
+        backgroundSize: 'cover'
+
+    };
+
+    const imageStyle = {
     };
 
     return (
         <Router>
             <div className="App" style={appStyle}>
+                <div className="bg-image" style={ imageStyle }>
+                </div>
                 <Switch>
                     <Route exact path="/" component={UI}/>
                     <Route exact path="/Tic-Tac-Toe" component={TicTacToe}/>
