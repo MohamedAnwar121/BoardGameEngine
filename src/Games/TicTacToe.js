@@ -23,14 +23,19 @@ class TicTacToe extends GameEngine{
             }
         };
     }
+
+
+    initializePiecesSource(){
+        this.piecesSource[this.gamePieces.X] = <i className="fa fa-x" style={{fontSize: "100px"}}></i>;
+        this.piecesSource[this.gamePieces.O] = <i className="fa fa-o" style={{fontSize: "100px"}}></i>;
+    }
+
     constructor(props) {
         super(props);
         this.initializeGamePieces();
         this.initializeComponentState();
         this.initializeCellStyle();
-
-        this.pieces[this.gamePieces.X] = <i className="fa fa-x" style={{fontSize: "100px"}}></i>;
-        this.pieces[this.gamePieces.O] = <i className="fa fa-o" style={{fontSize: "100px"}}></i>;
+        this.initializePiecesSource();
 
         // data missing error correction
         this.controller = this.controller.bind(this);
@@ -45,26 +50,23 @@ class TicTacToe extends GameEngine{
             return;
         }
 
+        this.state.grid[rowIndex][colIndex] = this.state.playerState.currentPiece;
+        this.setState({ grid: this.state.grid });
 
-        let newGrid = this.state.grid.map(row => [...row]);
-        newGrid[rowIndex][colIndex] = this.state.currentPiece;
-        this.setState({ grid: newGrid });
         this.switchPlayer();
     }
 
     switchPlayer(){
         if( this.state.playerState.playerTurn === this.turn.player1 ){
-            this.state.playerState.playerTurn = this.turn.player2;
             this.state.playerState.currentPiece = this.gamePieces.O;
+            this.state.playerState.playerTurn = this.turn.player2;
         } else {
-            this.state.playerState.playerTurn = this.turn.player1;
             this.state.playerState.currentPiece = this.gamePieces.X;
+            this.state.playerState.playerTurn = this.turn.player1;
         }
     }
 
-    drawer(){
-        return super.drawer();
-    }
+    drawer(){return super.drawer();}
 
     render() {return super.render()}
 

@@ -1,11 +1,15 @@
 import {Component} from 'react';
-import {Col, Row} from "react-bootstrap";
-import {keyboard} from "@testing-library/user-event/dist/keyboard";
 
 
 class GameEngine extends Component {
 
     singlePlayer = false;
+
+    turn = {
+        player1: 'player1',
+        player2: 'player2'
+    };
+
     playerState = {
         playerTurn: null,
         playerPieces: {},
@@ -14,36 +18,17 @@ class GameEngine extends Component {
 
     gamePieces = {};
 
-    turn = {
-        player1: 'player1',
-        player2: 'player2'
-    };
-
     board = {
         rows: 0,
         cols: 0,
+        isAlternatingColor : false,
+        baseColor: 'white',
+        alternatingColor: '#1a1c21',
+        isCircular: false
     }
 
-    cell = {
-        height: 0,
-        width: 0,
-        default_color: null,
-        alternating_color: null,
-        shape: null,
-        piece: null
-    }
+    piecesSource = {};
 
-    pieces = null;
-
-
-
-    // controller(event) {
-    //     console.log('in parent');
-    //     // event.preventDefault();
-    //     console.log(event);
-    //     // console.log(event.target);
-    // }
-    cellStyle = null;
 
     instantiateBoard(rows, cols) {
         this.board.rows = rows;
@@ -53,30 +38,24 @@ class GameEngine extends Component {
 
     itemRender(rowIndex, colIndex) {
         const pieceEnum = this.state.grid[rowIndex][colIndex]; // enum
-        const piece = this.pieces[pieceEnum];
-
-        return piece;
+        return (pieceEnum === null) ?  '' : this.piecesSource[pieceEnum];
     }
 
     drawer() {
-
-        let data = this.state.grid;
-
         const rows = [];
 
         for (let j = 0; j < this.board.cols; j++) {
             const cells = [];
-
 
             for (let i = 0; i < this.board.rows; i++) {
                 cells.push(
                     <div className="col" key={ i * (this.board.cols ) + j } >
                         <button
                             key={ i * (this.board.cols ) + j }
-                            style={ this.cellStyle }
+                            style={ this.initializeCellStyle(i,j) }
                             onClick={ this.controller }
                             id={ (i * (this.board.cols ) + j).toString() }>
-
+                            {this.itemRender(i,j)}
                         </button>
                     </div>
                 );
@@ -94,22 +73,25 @@ class GameEngine extends Component {
 
     }
 
-    render() {
-        return this.drawer();
-    }
-
-    initializeCellStyle(){
-        this.cellStyle = {
-            backgroundColor: 'white',
+    initializeCellStyle(i,j){
+        return  {
+            backgroundColor: (!this.board.isAlternatingColor) ?
+                this.board.baseColor : this.getAlternatingColIfNeeded(i,j),
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            fontSize: '30px',
+            borderRadius: (this.board.isCircular) ? 600 / this.board.cols : 0,
+            border: 'solid',
             width: 600 / this.board.cols,
             height: 600 / this.board.cols,
         }
     }
 
+    getAlternatingColIfNeeded(i,j){
+        return ( (i + j) % 2 !== 0 ) ? this.board.alternatingColor : this.board.baseColor;
+    }
+
+    render() {return this.drawer();}
 }
 
 export default GameEngine;
