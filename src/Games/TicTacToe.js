@@ -44,10 +44,18 @@ class TicTacToe extends GameEngine{
         this.initializePiecesSource();
     }
 
+    getInput(input) {
+
+        let b = input[input.length - 1].toLowerCase().charCodeAt(0) - 97;
+        let a = Number(input.substring(0, input.length - 1)) - 1;
+
+        return [a, b];
+    }
+
     controller(input) {
 
-        let rowIndex = input.split(/\s+/)[0];
-        let colIndex = input.split(/\s+/)[1];
+        let rowIndex = this.getInput(input)[0];
+        let colIndex = this.getInput(input)[1];
 
         console.log(rowIndex , colIndex);
 
@@ -57,9 +65,9 @@ class TicTacToe extends GameEngine{
         }
 
         this.state.grid[rowIndex][colIndex] = this.state.playerState.currentPiece;
-        this.setState({ grid: this.state.grid });
-
         this.switchTurn();
+
+        return this.state;
     }
 
     switchTurn(){
@@ -72,11 +80,13 @@ class TicTacToe extends GameEngine{
         }
     }
 
-    drawer(){return super.drawer();}
+    drawer(state){
+        this.setState(state);
+        return super.drawer();
+    }
 
     render() {return super.render()}
 }
 
 export default TicTacToe;
-
 

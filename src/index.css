@@ -7,11 +7,10 @@
     align-items: center;
     vertical-align: middle;
     border-radius: 2%;
-
     border-bottom-right-radius: 10%;
 
     /*x 2(x-1)*/
-    padding: 6px 9px;
+    padding: 8px 9px;
     position: absolute;
     background-color: black;
     top: 50%;

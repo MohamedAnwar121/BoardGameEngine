@@ -1,5 +1,5 @@
 import React from "react";
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, useLocation } from "react-router-dom";
 import TicTacToe from "../Games/TicTacToe";
 import ConnectFour from "../Games/ConnectFour";
 import Checkers from "../Games/Checkers";
@@ -9,32 +9,131 @@ import EightQueens from "../Games/EightQueens";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import UI from "../UI";
 
-
 function App() {
 
-    const appStyle = {
-        width: "100%",
-        backgroundImage: "url('https://static.vecteezy.com/system/resources/previews/000/697/543/original/chess-rook-wire-frame-polygon-blue-frame-structure-vector.jpg",
-        height: "100vh",
-        backgroundSize: 'cover'
+    function changeImage(location) {
 
-    };
+        switch (location.pathname){
+            case '/': return "url('https://wallpaperaccess.com/full/1642289.jpg')";
+            case '/Checkers': return "url('https://www.hdwallpaper.nu/wp-content/uploads/2017/03/circle-23.png')";
+            case '/Chess' : return "url('https://static.vecteezy.com/system/resources/previews/000/697/543/original/chess-rook-wire-frame-polygon-blue-frame-structure-vector.jpg')";
+            case '/Connect-4': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
+            case '/Sudoku': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
+            case '/8-Queens': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
+            case '/Tic-Tac-Toe': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
+        }
 
-    const imageStyle = {};
+    }
 
     return (
         <Router>
-            <div className="App" style={appStyle}>
-                <Switch>
-                    <Route exact path="/" component={UI}/>
-                    <Route exact path="/Tic-Tac-Toe" component={TicTacToe}/>
-                    <Route exact path="/Connect-4" component={ConnectFour}/>
-                    <Route exact path="/Checkers" component={Checkers}/>
-                    <Route exact path="/Chess" component={Chess}/>
-                    <Route exact path="/Sudoku" component={Sudoku}/>
-                    <Route exact path="/8-Queens" component={EightQueens}/>
-                </Switch>
-            </div>
+            <Switch>
+                <Route exact path="/">
+                    {({ location }) => (
+                        <div
+                            className="App"
+                            style={{
+                                width: "100%",
+                                backgroundImage: changeImage(location),
+                                height: "100vh",
+                                backgroundSize: 'cover'
+                            }}
+                        >
+                            <UI />
+                        </div>
+                    )}
+                </Route>
+                <Route exact path="/Tic-Tac-Toe">
+                    {({ location }) => (
+                        <div
+                            className="App"
+                            style={{
+                                width: "100%",
+                                backgroundImage: changeImage(location),
+                                height: "100vh",
+                                backgroundSize: 'cover'
+                            }}
+                        >
+                            <TicTacToe />
+                        </div>
+                    )}
+                </Route>
+                <Route exact path="/Connect-4">
+                    {({ location }) => (
+                        <div
+                            className="App"
+                            style={{
+                                width: "100%",
+                                backgroundImage: changeImage(location),
+                                height: "100vh",
+                                backgroundSize: 'cover'
+                            }}
+                        >
+                            <ConnectFour />
+                        </div>
+                    )}
+                </Route>
+                <Route exact path="/Checkers">
+                    {({ location }) => (
+                        <div
+                            className="App"
+                            style={{
+                                width: "100%",
+                                backgroundImage: changeImage(location),
+                                height: "100vh",
+                                backgroundSize: 'cover'
+                            }}
+                        >
+                            <Checkers />
+                        </div>
+                    )}
+                </Route>
+                <Route exact path="/Chess">
+                    {({ location }) => (
+                        <div
+                            className="App"
+                            style={{
+                                width: "100%",
+                                backgroundImage: changeImage(location),
+                                height: "100vh",
+                                backgroundSize: 'cover'
+                            }}
+                        >
+                            <Chess />
+                        </div>
+                    )}
+                </Route>
+                <Route exact path="/Sudoku">
+                    {({ location }) => (
+                        <div
+                            className="App"
+                            style={{
+                                width: "100%",
+                                backgroundImage: changeImage(location),
+                                height: "100vh",
+                                backgroundSize: 'cover'
+                            }}
+                        >
+                            <Sudoku />
+                        </div>
+                    )}
+                </Route>
+                <Route exact path="/8-Queens">
+                    {({ location }) => (
+                        <div
+                            className="App"
+                            style={{
+                                width: "100%",
+                                backgroundImage: changeImage(location),
+                                height: "100vh",
+                                backgroundSize: 'cover'
+                            }}
+                        >
+                            <EightQueens />
+                        </div>
+                    )}
+                </Route>
+            </Switch>
         </Router>
     );
 }

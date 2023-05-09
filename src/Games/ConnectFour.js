@@ -21,6 +21,8 @@ class ConnectFour extends GameEngine{
 
     initializeComponentState() {
 
+        this.setPieceScalar(1);
+
         this.state = {
             grid: this.instantiateBoard(6, 7),
             playerState: {
@@ -40,15 +42,25 @@ class ConnectFour extends GameEngine{
     initializePiecesSource() {
         this.piecesSource[this.gamePieces.redCircle] = <i className="fa fa-circle" style=
             {{fontSize: this.board.pieceScalar * this.board.cellWidth,
-            color: 'red'}}></i>;
+                color: 'red'}}></i>;
         this.piecesSource[this.gamePieces.yellowCircle] = <i className="fa fa-circle" style=
             {{fontSize: this.board.pieceScalar * this.board.cellWidth,
-            color: 'yellow'}}></i>;
+                color: 'yellow'}}></i>;
     }
 
-    controller(event){
-        let rowIndex = (event.currentTarget.id / this.board.cols) >> 0;
-        let colIndex = (event.currentTarget.id % this.board.cols) >> 0;
+    getInput(input) {
+
+        let b = input[input.length - 1].toLowerCase().charCodeAt(0) - 97;
+        let a = Number(input.substring(0, input.length - 1)) - 1;
+
+        return [a, b];
+    }
+
+    controller(input){
+
+        let rowIndex = this.getInput(input)[0];
+        let colIndex = this.getInput(input)[1];
+
 
         if( this.state.grid[rowIndex][colIndex] !== null ){
             alert('error in position');
@@ -59,10 +71,11 @@ class ConnectFour extends GameEngine{
         this.lastCircleOnEachCol[colIndex] = Math.max(newRowIndex-1,0);
 
         this.state.grid[newRowIndex][colIndex] = this.state.playerState.currentPiece;
-        this.setState({ grid: this.state.grid });
+        // this.setState({ grid: this.state.grid });
 
         this.switchTurn();
 
+        return this.state;
     }
 
     switchTurn(){
@@ -75,12 +88,12 @@ class ConnectFour extends GameEngine{
         }
     }
 
-    drawer(){
-        this.board.isCircular = true;
+    drawer(state){
+        this.setState(state);
         return super.drawer();
     }
 
-    render() {return this.drawer();}
+    render() {return super.render()}
 }
 
 export default ConnectFour;

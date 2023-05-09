@@ -28,14 +28,14 @@ class EightQueens extends GameEngine {
         this.initializeGamePieces();
         this.initializeComponentState();
         this.initializePiecesSource();
-
-        // data missing error correction
-        this.controller = this.controller.bind(this);
     }
 
-    controller(event) {
-        let rowIndex = (event.currentTarget.id / this.board.cols) >> 0;
-        let colIndex = (event.currentTarget.id % this.board.cols) >> 0;
+    controller(input) {
+
+
+        let rowIndex = this.getInput(input)[0];
+        let colIndex = this.getInput(input)[1];
+
 
         if (this.state.grid[rowIndex][colIndex] !== null) {
             this.state.grid[rowIndex][colIndex] = null;
@@ -78,18 +78,22 @@ class EightQueens extends GameEngine {
             return;
         }
         this.state.grid[rowIndex][colIndex] = this.gamePieces.queen
-        this.setState({grid: this.state.grid});
 
+        return this.state;
     }
 
-    drawer() {
+    drawer(state){
+        this.setState(state);
         return super.drawer();
     }
 
-    render() {
-        return this.drawer();
-    }
+    render() {return super.render()}
 
+    getInput(input) {
+        let b = input[input.length - 1].toLowerCase().charCodeAt(0) - 97;
+        let a = Number(input.substring(0, input.length - 1)) - 1;
+        return [a, b];
+    }
 }
 
 export default EightQueens;

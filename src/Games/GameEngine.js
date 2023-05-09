@@ -1,4 +1,4 @@
-import {Component, createRef} from 'react';
+import {Component} from 'react';
 
 
 class GameEngine extends Component {
@@ -27,10 +27,14 @@ class GameEngine extends Component {
         isCircular: false,
         cellScalar: 1,
         pieceScalar: 0.7,
+        numbersScalar: 0.7,
         cellHeight: 0,
         cellWidth: 0,
         cellMargin: 5,
-        buttonsReferenceGrid: []
+        borderRightWidth : 1,
+        borderBottomWidth : 1,
+        setColIndexesForWidth: [],
+        setRowIndexesForWidth: []
     }
 
     piecesSource = {};
@@ -53,17 +57,6 @@ class GameEngine extends Component {
         this.board.cols = cols;
         this.board.cellWidth = (600 / this.board.cols) * this.board.cellScalar;
         this.board.cellHeight = (600 / this.board.cols) * this.board.cellScalar;
-
-        for (let i = 0; i < this.board.rows; i++) {
-            if (!this.board.buttonsReferenceGrid[i]) {
-                this.board.buttonsReferenceGrid[i] = [];
-            }
-
-            for (let j = 0; j < this.board.cols; j++) {
-                this.board.buttonsReferenceGrid[i][j] = createRef();
-            }
-        }
-
         return Array.from(Array(rows), () => new Array(cols).fill(null));
     }
 
@@ -90,7 +83,8 @@ class GameEngine extends Component {
         }
     }
 
-    drawer() {
+    drawer(state) {
+
         const rows = [];
 
         for (let j = 0; j <= this.board.cols; j++) {
@@ -105,9 +99,7 @@ class GameEngine extends Component {
                             key={i * (this.board.cols) + j}
                             style={this.getCellStyle(i,j)}
                             id={(i * (this.board.cols) + j).toString()}
-                            // ref={ (j ===  this.board.cols || i === this.board.rows) ? r => {
-                            //     this.board.buttonsReferenceGrid[i][j] = r;
-                            // } : null}
+                            disabled={(i === this.board.rows || j === this.board.cols)}
                             >
                             {this.getItem(i, j)}
                         </button>
@@ -139,7 +131,9 @@ class GameEngine extends Component {
             alignItems: 'center',
             borderRadius: (this.board.isCircular) ? this.board.cellWidth : 0,
             border: 'solid',
-            borderWidth: '0',
+            borderWidth: '1px',
+            borderRightWidth : this.setColBorderWidth(i,j),
+            borderBottomWidth : this.setRowBorderWidth(i,j),
             margin: `${this.board.cellMargin}px ${this.board.cellMargin / 2}px`,
             width: this.board.cellWidth,
             height: this.board.cellHeight
@@ -157,9 +151,9 @@ class GameEngine extends Component {
                 background: 'none',
                 cursor: 'pointer',
                 color: 'white',
-                disabled: 'true',
                 borderRadius: '100px',
-                fontSize : this.board.pieceScalar * this.board.cellWidth,
+                opacity: '1',
+                fontSize : this.board.numbersScalar * this.board.cellWidth,
                 borderWidth: (i !== this.board.rows || j !== this.board.cols) ? '5px' : '0' ,
                 margin: `${this.board.cellMargin}px ${this.board.cellMargin / 2 }px`,
                 width: this.board.cellWidth,
@@ -172,6 +166,24 @@ class GameEngine extends Component {
         return ((i + j) % 2 !== 0) ? this.board.alternatingColor : this.board.baseColor;
     }
 
+    setColBorderWidth(i, j) {
+        for (let a of this.board.setColIndexesForWidth) {
+            if (a === j) {
+                return this.board.borderRightWidth;
+            }
+        }
+        return '1px';
+    }
+
+    setRowBorderWidth(i, j) {
+        for (let a of this.board.setRowIndexesForWidth) {
+            if (a === i) {
+                return this.board.borderRightWidth;
+            }
+        }
+        return '1px';
+    }
+
     render() {
         return this.drawer();
     }
@@ -181,9 +193,8 @@ class GameEngine extends Component {
             let input = await this.waitForEvent();
             if (input === null) break;
 
-            // let words = input.split(/\s+/);
-            this.controller(input);
-            // this.drawer();
+            let state = this.controller(input);
+            this.drawer(state);
         }
     }
 
@@ -199,6 +210,8 @@ class GameEngine extends Component {
     componentDidMount() {
         this.gameDirector().then();
     }
+
+    getInput() {}
 }
 
 export default GameEngine;

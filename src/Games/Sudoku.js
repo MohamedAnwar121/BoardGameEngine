@@ -3,20 +3,6 @@ import SudokuGenerator from "./SudokuGenerator";
 
 class Sudoku extends GameEngine {
 
-    constructor(props) {
-        super(props);
-        this.singlePlayer = true;
-
-        this.initializeGamePieces();
-        this.initializeComponentState();
-        this.initializeCellStyle();
-        this.initializePiecesSource();
-        this.initializeGridWithKEmptyCells(40);
-
-        this.controller = this.controller.bind(this);
-        this.recordInput = this.recordInput.bind(this);
-    }
-
     initializeGamePieces() {
         this.gamePieces = {
             1: '1',
@@ -32,11 +18,17 @@ class Sudoku extends GameEngine {
     }
 
     initializeComponentState() {
-        this.setPieceScalar(0.8);
+        this.setPieceScalar(0.7);
+        this.board.setColIndexesForWidth = [2, 5];
+        this.board.setRowIndexesForWidth = [2, 5];
+
+        this.board.borderRightWidth = '5px';
+        this.board.borderBottomWidth = '5px';
+
+        this.board.cellMargin = 4;
 
         this.state = {
-            grid: this.instantiateBoard(9, 9),
-            input: null
+            grid: this.instantiateBoard(9, 9)
         };
     }
 
@@ -54,6 +46,8 @@ class Sudoku extends GameEngine {
     }
 
     initializeGridWithKEmptyCells(k) {
+
+        // grid initial state.
         const sudoku = new SudokuGenerator(9, k);
         this.state.grid = sudoku.generateSudoku();
 
@@ -80,45 +74,60 @@ class Sudoku extends GameEngine {
         this.initialGrid = this.state.grid.map((row) => [...row]);
     }
 
-    setRowLineWidth(i) {
-        for (let j = 0; j < this.board.cols; j++)
-            if (i !== this.board.cols - 1)
-                this.board.buttonsReferenceGrid[j][i].style.borderRightWidth = '4px';
+    constructor(props) {
+        super(props);
+        this.singlePlayer = true;
+
+        this.initializeGamePieces();
+        this.initializeComponentState();
+        this.initializeCellStyle();
+        this.initializePiecesSource();
+        this.initializeGridWithKEmptyCells(40);
+
+        this.controller = this.controller.bind(this);
+        this.recordInput = this.recordInput.bind(this);
     }
 
-    setColLineWidth(j) {
-        for (let i = 0; i < this.board.rows; i++)
-            if (j !== this.board.cols - 1)
-                this.board.buttonsReferenceGrid[j][i].style.borderBottomWidth = '4px';
+    getInput(input) {
+        // a >> row.
+        // b >> col.
+        // c >> number inserted.
+
+        const [string1, string2] = input.split(" ");
+
+        let b = string1[ string1.length - 1 ].toLowerCase().charCodeAt(0) - 97;
+        let a = Number(string1.substring(0, string1.length - 1)) - 1;
+        let c = Number(string2);
+
+        if (!(c >= 0 && c <= 9)) {
+            alert('enter a valid number');
+            return null;
+        }
+
+        return [a, b, c];
     }
+    controller(input) {
 
-    controller(event) {
-        let rowIndex = (event.currentTarget.id / this.board.cols) >> 0;
-        let colIndex = (event.currentTarget.id % this.board.cols) >> 0;
+        if (this.getInput(input) === null) return;
+
+        let rowIndex = this.getInput(input)[0];
+        let colIndex = this.getInput(input)[1];
+        let numberInserted = this.getInput(input)[2];
 
 
-        console.log(this.state.grid[rowIndex][colIndex] , this.initialGrid[rowIndex][colIndex])
         if (this.state.grid[rowIndex][colIndex] !== 0 &&
             this.state.grid[rowIndex][colIndex] === this.initialGrid[rowIndex][colIndex]) {
             alert('cannot be overridden');
             return;
         }
 
-        console.log(this.rowSet);
-        console.log(this.colSet);
-        console.log(this.squareSet);
 
-        if (this.state.input === null) {
-            alert('pick a number first');
-            return;
-        }
-
-        if (this.rowSet[rowIndex].has(parseInt(this.state.input))) {
+        if (this.rowSet[rowIndex].has(numberInserted)) {
             alert('error in position');
             return;
         }
 
-        if (this.colSet[colIndex].has(parseInt(this.state.input))) {
+        if (this.colSet[colIndex].has(numberInserted)) {
             alert('error in position');
             return;
         }
@@ -126,7 +135,7 @@ class Sudoku extends GameEngine {
         let squareIndex =
             (Math.floor(rowIndex / 3)) * this.board.cols / 3 + Math.floor(colIndex / 3);
 
-        if (this.squareSet[squareIndex].has(parseInt(this.state.input))) {
+        if (this.squareSet[squareIndex].has(numberInserted)) {
             alert('error in position');
             return;
         }
@@ -137,29 +146,14 @@ class Sudoku extends GameEngine {
             this.squareSet[squareIndex].delete(parseInt(this.state.grid[rowIndex][colIndex]));
         }
 
-        this.state.grid[rowIndex][colIndex] = this.state.input;
-        this.setState({grid: this.state.grid});
+        this.state.grid[rowIndex][colIndex] = numberInserted;
+        // this.setState({grid: this.state.grid});
 
-        this.rowSet[rowIndex].add(parseInt(this.state.input));
-        this.colSet[colIndex].add(parseInt(this.state.input));
-        this.squareSet[squareIndex].add(parseInt(this.state.input));
-    }
+        this.rowSet[rowIndex].add(numberInserted);
+        this.colSet[colIndex].add(numberInserted);
+        this.squareSet[squareIndex].add(numberInserted);
 
-
-    drawer() {
-        const buttons = [];
-        for (let i = 0; i < 9; i++)
-            buttons.push(<button key={i}
-                                 style={this.initializeCellStyle(i, i)}
-                                 id={String(i + 1)}
-                                 onClick={this.recordInput}>{i + 1}</button>);
-        return <>
-            {super.drawer()}
-            <span>
-                {buttons}
-            </span>
-        </>
-        // return super.drawer();
+        return this.state;
     }
 
     recordInput(event) {
@@ -167,16 +161,13 @@ class Sudoku extends GameEngine {
         this.setState({input: this.state.input});
     }
 
-    componentDidMount() {
-        for (let i = 2; i < this.board.cols; i += 3) {
-            this.setRowLineWidth(i);
-            this.setColLineWidth(i);
-        }
+
+    drawer(state){
+        this.setState(state);
+        return super.drawer();
     }
 
-    render() {
-        return super.render();
-    }
+    render() {return super.render()}
 
 }
 
