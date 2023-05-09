@@ -20,8 +20,7 @@ function App() {
 
     };
 
-    const imageStyle = {
-    };
+    const imageStyle = {};
 
     return (
         <Router>
