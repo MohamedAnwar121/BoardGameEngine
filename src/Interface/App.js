@@ -17,12 +17,12 @@ function App() {
             case '/': return "url('https://wallpaperaccess.com/full/1642289.jpg')";
             case '/Checkers': return "url('https://www.hdwallpaper.nu/wp-content/uploads/2017/03/circle-23.png')";
             case '/Chess' : return "url('https://static.vecteezy.com/system/resources/previews/000/697/543/original/chess-rook-wire-frame-polygon-blue-frame-structure-vector.jpg')";
-            case '/Connect-4': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
-            case '/Sudoku': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
-            case '/8-Queens': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
-            case '/Tic-Tac-Toe': return "url('https://wallpapercave.com/wp/wp4699894.jpg')";
+            case '/Connect-4': return "url('https://www.hdwallpaper.nu/wp-content/uploads/2017/03/circle-23.png')";
+            case '/Sudoku': return "url('https://wallpaperaccess.com/full/1642289.jpg')";
+            case '/8-Queens': return "url('https://wallpaperaccess.com/full/1642289.jpg')";
+            case '/Tic-Tac-Toe': return "url('https://wallpaperaccess.com/full/1642289.jpg')";
         }
-
+        
     }
 
     return (
