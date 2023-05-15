@@ -65,6 +65,8 @@ class ConnectFour extends GameEngine{
     initializeComponentState(chosenPieces) {
 
         this.setPieceScalar(1);
+        this.board.isCircular = true;
+        this.board.showBoardNumbers = false;
 
         this.startState(chosenPieces);
 

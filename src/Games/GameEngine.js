@@ -45,6 +45,8 @@ class GameEngine extends Component {
         borderBottomWidth : 1,
         setColIndexesForWidth: [],
         setRowIndexesForWidth: [],
+        showBoardNumbers: true,
+        showBoardLetters: true,
         distributePieces: ""
     }
 
@@ -101,9 +103,14 @@ class GameEngine extends Component {
 
         for (let j = 0; j <= this.board.cols; j++) {
 
+            if (!this.board.showBoardNumbers && j === this.board.cols) break;
+
             const cells = [];
 
             for (let i = 0; i <= this.board.rows; i++) {
+
+                if (!this.board.showBoardLetters && i === this.board.rows) break;
+
 
                 cells.push(
                     <div className="col" key={i * (this.board.cols) + j}>
