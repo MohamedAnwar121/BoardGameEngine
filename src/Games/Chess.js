@@ -4,16 +4,15 @@ class Chess extends GameEngine {
 
     constructor(props) {
         super(props);
-
+        this.board.distributePieces = "note: W >> white, B >> black            \n                                             << Enter W OR B >>";
         this.initializeGamePieces();
-        this.initializeComponentState();
-        this.initializeCellStyle();
-        this.initializePiecesSource();
-        this.initializeGridWithInitialState();
-        this.initializePiecesRules();
+        this.initializeComponentState("W");
     }
 
     controller(input) {
+
+        console.log(this.state)
+
         let index = this.getInput(input);
         let source = index[0];
         let dest = index[1];
@@ -92,9 +91,10 @@ class Chess extends GameEngine {
 
 
                 for (let rowIndex = sourceX, colIndex = sourceY, counter = 0;
-                     counter < value && this.isInRange(rowIndex, colIndex, this.board.rows, this.board.cols);
+                     counter < value+1 && this.isInRange(rowIndex, colIndex, this.board.rows, this.board.cols);
                      rowIndex += key.move[0] , colIndex += key.move[1] , counter++) {
 
+                    console.log(rowIndex, colIndex)
 
                     if (rowIndex === destinationPointRow && colIndex === destinationPointCol) {
 
@@ -129,7 +129,8 @@ class Chess extends GameEngine {
                             alert('can\'t eat your piece');
                             return this.state;
                         }
-                    } else if (this.state.grid[rowIndex][colIndex] !== null
+                    }
+                    else if (this.state.grid[rowIndex][colIndex] !== null
                         && (rowIndex !== sourceX || colIndex !== sourceY)) {
                         break;
                     }
@@ -420,16 +421,22 @@ class Chess extends GameEngine {
 
     }
 
-    initializeComponentState() {
+    initializeComponentState(chosenPieces) {
         this.setIsAlternating(true);
         this.board.baseColor = '#00ffff';
         this.board.alternatingColor = '#002260';
         this.setPieceScalar(0.7);
 
+        this.startState(chosenPieces);
+
+        console.log(this.state);
+    }
+    startState(chosenPieces) {
+        console.log(chosenPieces)
         this.state = {
             grid: this.instantiateBoard(8, 8),
             playerState: {
-                playerTurn: this.turn.player1,
+                playerTurn: (chosenPieces === "W"? this.turn.player1: this.turn.player2),
                 playerPieces: {
                     player1: new Set(
                         [...[
@@ -458,8 +465,11 @@ class Chess extends GameEngine {
                 }
             }
         };
-
-        console.log(this.state);
+        this.initializeGridWithInitialState();
+        this.initializeCellStyle();
+        this.initializePiecesSource();
+        this.initializePiecesRules();
+        return this.state;
     }
 
     initializePiecesSource() {

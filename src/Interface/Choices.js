@@ -37,7 +37,7 @@ const Choices = () => {
     }
     const labelStyle = {
         marginLeft: '115px',
-        fontSize: '40px',
+        fontSize: '38px',
         marginBottom: '-80px',
         justifyContent: 'center',
         alignItems: 'center',
@@ -59,6 +59,7 @@ const Choices = () => {
                     </button>
                 </div>
             </Link>
+
         </div>
     );
 

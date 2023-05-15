@@ -1,30 +1,10 @@
 import GameEngine from "./GameEngine";
 
 class EightQueens extends GameEngine {
-    initializeGamePieces() {
-        this.gamePieces = {
-            queen: 'queen'
-        };
-    }
-
-    initializeComponentState() {
-        this.setCellScalar(1.1);
-        this.setPieceScalar(0.8);
-
-        this.state = {
-            grid: this.instantiateBoard(8, 8)
-        };
-    }
-
-    initializePiecesSource() {
-        this.piecesSource[this.gamePieces.queen] = <i className="fa fa-chess-king" style={
-            {
-                fontSize: this.board.pieceScalar * this.board.cellWidth,
-            }}></i>;
-    }
-
     constructor(props) {
         super(props);
+        this.singlePlayer = true;
+
         this.initializeGamePieces();
         this.initializeComponentState();
         this.initializePiecesSource();
@@ -89,11 +69,34 @@ class EightQueens extends GameEngine {
 
     render() {return super.render()}
 
+    initializeGamePieces() {
+        this.gamePieces = {
+            queen: 'queen'
+        };
+    }
+
+    initializeComponentState() {
+        this.setCellScalar(1.1);
+        this.setPieceScalar(0.8);
+
+        this.state = {
+            grid: this.instantiateBoard(8, 8)
+        };
+    }
+
+    initializePiecesSource() {
+        this.piecesSource[this.gamePieces.queen] = <i className="fa fa-chess-king" style={
+            {
+                fontSize: this.board.pieceScalar * this.board.cellWidth,
+            }}></i>;
+    }
+
     getInput(input) {
         let b = input[input.length - 1].toLowerCase().charCodeAt(0) - 97;
         let a = Number(input.substring(0, input.length - 1)) - 1;
         return [a, b];
     }
+
 }
 
 export default EightQueens;

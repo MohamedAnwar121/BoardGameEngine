@@ -2,46 +2,12 @@ import GameEngine from "./GameEngine";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 class TicTacToe extends GameEngine{
-
-    initializeGamePieces() {
-        this.gamePieces = {
-            X: 'X',
-            O: 'O'
-        };
-    }
-
-    initializeComponentState(){
-
-        this.setPieceScalar(0.75);
-        this.setCellScalar(0.7);
-
-        this.state = {
-            grid: this.instantiateBoard(3, 3),
-            playerState: {
-                playerTurn: this.turn.player1, // must be generic
-                playerPieces: {
-                    player1: new Set().add(this.gamePieces.X),
-                    player2: new Set().add(this.gamePieces.O)
-                },
-                currentPiece: this.gamePieces.X
-            }
-        };
-    }
-
-
-    initializePiecesSource(){
-        this.piecesSource[this.gamePieces.X] = <i className="fa fa-x" style=
-            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
-        this.piecesSource[this.gamePieces.O] = <i className="fa fa-o" style=
-            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
-    }
-
     constructor(props) {
         super(props);
+        this.board.distributePieces = "Enter X OR O";
+
         this.initializeGamePieces();
-        this.initializeComponentState();
-        this.initializeCellStyle();
-        this.initializePiecesSource();
+        this.initializeComponentState("X");
     }
 
     getInput(input) {
@@ -53,6 +19,8 @@ class TicTacToe extends GameEngine{
     }
 
     controller(input) {
+
+        console.log(this.state)
 
         let rowIndex = this.getInput(input)[0];
         let colIndex = this.getInput(input)[1];
@@ -86,6 +54,50 @@ class TicTacToe extends GameEngine{
     }
 
     render() {return super.render()}
+
+    initializeGamePieces() {
+        this.gamePieces = {
+            X: 'X',
+            O: 'O'
+        };
+    }
+
+    initializeComponentState(chosenPieces){
+
+        this.setPieceScalar(0.75);
+        this.setCellScalar(0.7);
+
+        console.log(chosenPieces)
+        console.log("inst state")
+
+        this.startState(chosenPieces);
+    }
+
+    startState(chosenPieces) {
+        console.log(chosenPieces)
+        this.state = {
+            grid: this.instantiateBoard(3, 3),
+            playerState: {
+                playerTurn: (chosenPieces === "X"? this.turn.player1: this.turn.player2), // must be generic
+                playerPieces: {
+                    player1: new Set().add(this.gamePieces.X),
+                    player2: new Set().add(this.gamePieces.O)
+                },
+                currentPiece: chosenPieces
+            }
+        };
+        this.initializeCellStyle();
+        this.initializePiecesSource();
+        return this.state;
+    }
+    initializePiecesSource(){
+        this.piecesSource[this.gamePieces.X] = <i className="fa fa-x" style=
+            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
+        this.piecesSource[this.gamePieces.O] = <i className="fa fa-o" style=
+            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
+    }
+
+
 }
 
 export default TicTacToe;

@@ -1,5 +1,15 @@
 import {Component} from 'react';
 
+// input cases handle.
+
+    // xo >> 3c
+    // connect-4 >> 6f
+    // 8-queens >> 8h
+    // sudoku >> 9k 9
+    // chess >> 8h 8h
+    // checkers >> 8h 8h
+
+// starter color handle.
 
 class GameEngine extends Component {
 
@@ -34,7 +44,8 @@ class GameEngine extends Component {
         borderRightWidth : 1,
         borderBottomWidth : 1,
         setColIndexesForWidth: [],
-        setRowIndexesForWidth: []
+        setRowIndexesForWidth: [],
+        distributePieces: ""
     }
 
     piecesSource = {};
@@ -63,6 +74,7 @@ class GameEngine extends Component {
     initializeGamePieces() {}
 
     initializeComponentState() {}
+    startState(chosenPieces){}
 
     initializePiecesSource() {}
 
@@ -189,8 +201,18 @@ class GameEngine extends Component {
     }
 
     async gameDirector() {
+
+        // user choose his pieces.
+        if( !this.singlePlayer ){
+            let chosenShape = await this.waitForEvent(this.board.distributePieces);
+            let temp = this.startState(chosenShape);
+            console.log(temp);
+            this.setState(temp);
+        }
+
+        // game start.
         while (true) {
-            let input = await this.waitForEvent();
+            let input = await this.waitForEvent("                                        << Enter input >>");
             if (input === null) break;
 
             let state = this.controller(input);
@@ -198,12 +220,12 @@ class GameEngine extends Component {
         }
     }
 
-    async waitForEvent() {
+    async waitForEvent(criteria) {
         return new Promise((resolve) => {
             setTimeout(() => {
-                let input = prompt("Enter input or click cancel to exit >>");
+                let input = prompt(criteria);
                 resolve(input);
-            }, 100);
+            }, 1000);
         });
     }
 

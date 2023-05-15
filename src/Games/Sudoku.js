@@ -3,80 +3,10 @@ import SudokuGenerator from "./SudokuGenerator";
 
 class Sudoku extends GameEngine {
 
-    initializeGamePieces() {
-        this.gamePieces = {
-            1: '1',
-            2: '2',
-            3: '3',
-            4: '4',
-            5: '5',
-            6: '6',
-            7: '7',
-            8: '8',
-            9: '9'
-        };
-    }
-
-    initializeComponentState() {
-        this.setPieceScalar(0.7);
-        this.board.setColIndexesForWidth = [2, 5];
-        this.board.setRowIndexesForWidth = [2, 5];
-
-        this.board.borderRightWidth = '5px';
-        this.board.borderBottomWidth = '5px';
-
-        this.board.cellMargin = 4;
-
-        this.state = {
-            grid: this.instantiateBoard(9, 9)
-        };
-    }
-
-
-    initializePiecesSource() {
-        for (let i = 1; i <= this.board.rows; i++) {
-            this.piecesSource[this.gamePieces[i]] =
-                <i style={
-                    {
-                        fontSize: this.board.pieceScalar * this.board.cellWidth,
-                        fontStyle: "normal"
-                    }
-                }> {i} </i>;
-        }
-    }
-
-    initializeGridWithKEmptyCells(k) {
-
-        // grid initial state.
-        const sudoku = new SudokuGenerator(9, k);
-        this.state.grid = sudoku.generateSudoku();
-
-        this.rowSet = Array.from({length: this.board.rows}, () => new Set());
-        this.colSet = Array.from({length: this.board.cols}, () => new Set());
-        this.squareSet = Array.from({
-            length: this.board.cols / 3 * this.board.rows / 3
-        }, () => new Set());
-
-
-        for (let i = 0; i < this.board.rows; i++) {
-            for (let j = 0; j < this.board.cols; j++) {
-
-                if ( this.state.grid[i][j] === 0) continue;
-
-                this.rowSet[i].add(this.state.grid[i][j]);
-                this.colSet[j].add(this.state.grid[i][j]);
-
-                let squareIndex = (Math.floor(i / 3)) * this.board.cols / 3 + Math.floor(j / 3);
-                this.squareSet[squareIndex].add(this.state.grid[i][j]);
-            }
-        }
-
-        this.initialGrid = this.state.grid.map((row) => [...row]);
-    }
-
     constructor(props) {
         super(props);
         this.singlePlayer = true;
+        this.board.
 
         this.initializeGamePieces();
         this.initializeComponentState();
@@ -168,6 +98,77 @@ class Sudoku extends GameEngine {
     }
 
     render() {return super.render()}
+
+    initializeGamePieces() {
+        this.gamePieces = {
+            1: '1',
+            2: '2',
+            3: '3',
+            4: '4',
+            5: '5',
+            6: '6',
+            7: '7',
+            8: '8',
+            9: '9'
+        };
+    }
+
+    initializeComponentState() {
+        this.setPieceScalar(0.7);
+        this.board.setColIndexesForWidth = [2, 5];
+        this.board.setRowIndexesForWidth = [2, 5];
+
+        this.board.borderRightWidth = '5px';
+        this.board.borderBottomWidth = '5px';
+
+        this.board.cellMargin = 4;
+
+        this.state = {
+            grid: this.instantiateBoard(9, 9)
+        };
+    }
+
+
+    initializePiecesSource() {
+        for (let i = 1; i <= this.board.rows; i++) {
+            this.piecesSource[this.gamePieces[i]] =
+                <i style={
+                    {
+                        fontSize: this.board.pieceScalar * this.board.cellWidth,
+                        fontStyle: "normal"
+                    }
+                }> {i} </i>;
+        }
+    }
+
+    initializeGridWithKEmptyCells(k) {
+
+        // grid initial state.
+        const sudoku = new SudokuGenerator(9, k);
+        this.state.grid = sudoku.generateSudoku();
+
+        this.rowSet = Array.from({length: this.board.rows}, () => new Set());
+        this.colSet = Array.from({length: this.board.cols}, () => new Set());
+        this.squareSet = Array.from({
+            length: this.board.cols / 3 * this.board.rows / 3
+        }, () => new Set());
+
+
+        for (let i = 0; i < this.board.rows; i++) {
+            for (let j = 0; j < this.board.cols; j++) {
+
+                if ( this.state.grid[i][j] === 0) continue;
+
+                this.rowSet[i].add(this.state.grid[i][j]);
+                this.colSet[j].add(this.state.grid[i][j]);
+
+                let squareIndex = (Math.floor(i / 3)) * this.board.cols / 3 + Math.floor(j / 3);
+                this.squareSet[squareIndex].add(this.state.grid[i][j]);
+            }
+        }
+
+        this.initialGrid = this.state.grid.map((row) => [...row]);
+    }
 
 }
 

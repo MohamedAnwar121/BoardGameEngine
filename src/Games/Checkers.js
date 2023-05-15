@@ -2,109 +2,15 @@ import GameEngine from "./GameEngine";
 
 class Checkers extends GameEngine{
 
-    initializeGamePieces() {
-        this.gamePieces = {
-            BLACKMAN: 'black-man',
-            BLACKKING: 'black-king',
-            WHITEMAN: 'white-man',
-            WHITEKING: 'white-king'
-        };
-    }
 
-    initializePiecesRules() {
-        // there is a difference between map and js object.
-        // map >> [ <type A> ] = <type B>
-        // Object >> constant value: <type A>
-        let largeNumber = 100;
-        this.pieceRule = new Map();
-        this.pieceRule[ this.gamePieces.BLACKMAN ] = new Map();
-        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [1, 1], skip: false }, 1);
-        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [1, -1], skip: false }, 1);
-        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [2, 2], skip: true }, largeNumber);
-        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [2, -2], skip: true }, largeNumber);
-        this.pieceRule[ this.gamePieces.WHITEMAN ] = new Map();
-        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-1, 1], skip: false }, 1);
-        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-1,-1], skip: false }, 1);
-        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-2, -2], skip: true }, largeNumber);
-        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-2, 2], skip: true }, largeNumber);
-        this.pieceRule[ this.gamePieces.BLACKKING ] = new Map([...this.pieceRule[ this.gamePieces.BLACKMAN ],
-            ...this.pieceRule[ this.gamePieces.WHITEMAN ]]);
-        this.pieceRule[ this.gamePieces.WHITEKING ] = new Map( this.pieceRule[ this.gamePieces.BLACKKING ] );
-    }
-
-    initializeComponentState() {
-
-        this.setIsAlternating(true);
-        this.board.baseColor = '#00ffff';
-        this.board.alternatingColor = '#002260';
-        this.setPieceScalar(0.7);
-        this.board.cellMargin = 1;
-
-
-        let usedGrid = this.instantiateBoard(8, 8)
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 8; j++) {
-                usedGrid[i][j] = ( ((i + j) % 2 === 1)? this.gamePieces.BLACKMAN : null );
-            }
-        }
-
-        for (let i = 5; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
-                usedGrid[i][j] = ( ((i + j) % 2 === 1)? this.gamePieces.WHITEMAN : null );
-            }
-        }
-
-        this.state = {
-            grid: usedGrid,
-            playerState: {
-                playerTurn: this.turn.player1, // must be generic
-                playerPieces: {
-                    player1: new Set().add(this.gamePieces.BLACKMAN), // must be generic
-                    player2: new Set().add(this.gamePieces.WHITEMAN)
-                }
-            }
-        };
-    }
-
-    getBackgroundColor(i, j){
-        // must be updated in chess.
-        if( !this.board.isAlternatingColor )
-            return this.board.baseColor
-        else
-            return this.getAlternatingColIfNeeded(i,j)
-    }
-
-    initializeCellStyle(i,j){
-        return  {
-            backgroundColor: this.getBackgroundColor(i, j),
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            borderRadius: (this.board.isCircular) ? 600 / this.board.cols : 0,
-            border: 'solid',
-            width: 600 / this.board.cols,
-            height: 600 / this.board.cols,
-        }
-    }
-
-    initializePiecesSource() {
-        this.piecesSource[this.gamePieces.BLACKMAN] = <i className="fa fa-circle text-black " style=
-            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
-        this.piecesSource[this.gamePieces.BLACKKING] = <i className="fa fa-circle text-black " style=
-            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
-        this.piecesSource[this.gamePieces.WHITEMAN] = <i className="fa fa-circle text-white " style=
-            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
-        this.piecesSource[this.gamePieces.WHITEKING] = <i className="fa fa-circle text-white " style=
-            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
-    }
 
     constructor(props) {
         super(props);
+        this.board.distributePieces = "note: W >> white, B >> black            \n                                             << Enter W OR B >>";
+
         this.initializeGamePieces();
         this.initializePiecesRules();
-        this.initializeComponentState();
-        this.initializeCellStyle();
-        this.initializePiecesSource();
+        this.initializeComponentState("W");
         console.log('constructor ends.')
     }
 
@@ -179,6 +85,9 @@ class Checkers extends GameEngine{
         return isGoalPositionDetected;
     }
     controller(input){
+
+        console.log(this.state)
+
         // >>>>>>>>>>>>>>>>>>>>> logic >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         // 2 cases. i have player who plays
@@ -354,6 +263,107 @@ class Checkers extends GameEngine{
         let c = Number(string2.substring(0, string1.length - 1)) - 1;
 
         return [[a, b], [c, d]];
+    }
+
+    initializeGamePieces() {
+        this.gamePieces = {
+            BLACKMAN: 'black-man',
+            BLACKKING: 'black-king',
+            WHITEMAN: 'white-man',
+            WHITEKING: 'white-king'
+        };
+    }
+
+    initializePiecesRules() {
+        // there is a difference between map and js object.
+        // map >> [ <type A> ] = <type B>
+        // Object >> constant value: <type A>
+        let largeNumber = 100;
+        this.pieceRule = new Map();
+        this.pieceRule[ this.gamePieces.BLACKMAN ] = new Map();
+        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [1, 1], skip: false }, 1);
+        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [1, -1], skip: false }, 1);
+        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [2, 2], skip: true }, largeNumber);
+        this.pieceRule[ this.gamePieces.BLACKMAN ].set({ move: [2, -2], skip: true }, largeNumber);
+        this.pieceRule[ this.gamePieces.WHITEMAN ] = new Map();
+        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-1, 1], skip: false }, 1);
+        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-1,-1], skip: false }, 1);
+        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-2, -2], skip: true }, largeNumber);
+        this.pieceRule[ this.gamePieces.WHITEMAN ].set({ move: [-2, 2], skip: true }, largeNumber);
+        this.pieceRule[ this.gamePieces.BLACKKING ] = new Map([...this.pieceRule[ this.gamePieces.BLACKMAN ],
+            ...this.pieceRule[ this.gamePieces.WHITEMAN ]]);
+        this.pieceRule[ this.gamePieces.WHITEKING ] = new Map( this.pieceRule[ this.gamePieces.BLACKKING ] );
+    }
+
+    initializeComponentState(chosenPieces) {
+
+        this.setIsAlternating(true);
+        this.board.baseColor = '#00ffff';
+        this.board.alternatingColor = '#002260';
+        this.setPieceScalar(0.7);
+        this.board.cellMargin = 1;
+
+        this.startState(chosenPieces);
+    }
+    startState(chosenPieces) {
+        console.log(chosenPieces)
+        let usedGrid = this.instantiateBoard(8, 8)
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 8; j++) {
+                usedGrid[i][j] = ( ((i + j) % 2 === 1)? this.gamePieces.BLACKMAN : null );
+            }
+        }
+
+        for (let i = 5; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                usedGrid[i][j] = ( ((i + j) % 2 === 1)? this.gamePieces.WHITEMAN : null );
+            }
+        }
+        this.state = {
+            grid: usedGrid,
+            playerState: {
+                playerTurn: (chosenPieces === "W"? this.turn.player1: this.turn.player2), // must be generic
+                playerPieces: {
+                    player1: new Set().add(this.gamePieces.WHITEMAN), // must be generic
+                    player2: new Set().add(this.gamePieces.BLACKMAN)
+                }
+            }
+        };
+        this.initializeCellStyle();
+        this.initializePiecesSource();
+        return this.state;
+    }
+
+    getBackgroundColor(i, j){
+        // must be updated in chess.
+        if( !this.board.isAlternatingColor )
+            return this.board.baseColor
+        else
+            return this.getAlternatingColIfNeeded(i,j)
+    }
+
+    initializeCellStyle(i,j){
+        return  {
+            backgroundColor: this.getBackgroundColor(i, j),
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: (this.board.isCircular) ? 600 / this.board.cols : 0,
+            border: 'solid',
+            width: 600 / this.board.cols,
+            height: 600 / this.board.cols,
+        }
+    }
+
+    initializePiecesSource() {
+        this.piecesSource[this.gamePieces.BLACKMAN] = <i className="fa fa-circle text-black " style=
+            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
+        this.piecesSource[this.gamePieces.BLACKKING] = <i className="fa fa-circle text-black " style=
+            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
+        this.piecesSource[this.gamePieces.WHITEMAN] = <i className="fa fa-circle text-white " style=
+            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
+        this.piecesSource[this.gamePieces.WHITEKING] = <i className="fa fa-circle text-white " style=
+            {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
     }
 
 }
