@@ -111,6 +111,12 @@ class Checkers extends GameEngine{
 
         console.log('index: in controller')
         let index = this.getInput(input);
+
+        if (index === null) {
+            alert("XX not valid input XX");
+            return;
+        }
+
         let source = index[0];
         let dest = index[1];
 
@@ -254,13 +260,33 @@ class Checkers extends GameEngine{
     render() {return super.render()}
 
     getInput(input) {
-        const [string1, string2] = input.split(" ");
+        // invalid case
+        if(input.length === 0)return null;
 
-        let b = string1[string1.length - 1].toLowerCase().charCodeAt(0) - 97;
-        let a = Number(string1.substring(0, string1.length - 1)) - 1;
+        // invalid case
+        if(input.split(" ").length !== 4)return null;
 
-        let d = string2[string2.length - 1].toLowerCase().charCodeAt(0) - 97;
-        let c = Number(string2.substring(0, string1.length - 1)) - 1;
+        const [string1, string2, string3, string4] = input.split(" ");
+
+        console.log(string1, string2, string3, string4)
+
+        // invalid cases
+        if( isNaN(string1) )return null;
+        if( isNaN(string3) )return null;
+        if( !(string2.length === 1 && 'a' <= string2.toLowerCase() && string2.toLowerCase() <= 'z') )return null;
+        if( !(string4.length === 1 && 'a' <= string4.toLowerCase() && string4.toLowerCase() <= 'z') )return null;
+
+        let b = string2.toLowerCase().charCodeAt(0) - 97;
+        let a = Number(string1) - 1;
+
+        let d = string4.toLowerCase().charCodeAt(0) - 97;
+        let c = Number(string3) - 1;
+
+        // invalid cases
+        if( !(0 <= a && a <= 7) )return null;
+        if( !(0 <= b && b <= 7) )return null;
+        if( !(0 <= c && c <= 7) )return null;
+        if( !(0 <= d && d <= 7) )return null;
 
         return [[a, b], [c, d]];
     }

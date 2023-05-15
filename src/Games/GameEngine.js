@@ -2,12 +2,12 @@ import {Component} from 'react';
 
 // input cases handle.
 
-    // xo >> 3c
-    // connect-4 >> 6f
-    // 8-queens >> 8h
-    // sudoku >> 9k 9
-    // chess >> 8h 8h
-    // checkers >> 8h 8h
+    // xo >> 3 c
+    // connect-4 >> 6 f
+    // 8-queens >> 8 h
+    // sudoku >> 9 k 9
+    // chess >> 8 h 8 h
+    // checkers >> 8 h 8 h
 
 // starter color handle.
 
@@ -119,7 +119,7 @@ class GameEngine extends Component {
                             style={this.getCellStyle(i,j)}
                             id={(i * (this.board.cols) + j).toString()}
                             disabled={(i === this.board.rows || j === this.board.cols)}
-                            >
+                        >
                             {this.getItem(i, j)}
                         </button>
                     </div>

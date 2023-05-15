@@ -18,8 +18,14 @@ class ConnectFour extends GameEngine{
 
         console.log(this.state)
 
-        let rowIndex = this.getInput(input)[0];
-        let colIndex = this.getInput(input)[1];
+        let index = this.getInput(input);
+        if (index === null) {
+            alert("XX not valid input XX");
+            return;
+        }
+
+        let rowIndex = index[0];
+        let colIndex = index[1];
 
 
         if( this.state.grid[rowIndex][colIndex] !== null ){
@@ -102,10 +108,12 @@ class ConnectFour extends GameEngine{
 
     getInput(input) {
 
-        let b = input[input.length - 1].toLowerCase().charCodeAt(0) - 97;
-        let a = Number(input.substring(0, input.length - 1)) - 1;
+        // invalid case
+        if( !(input.length === 1 && 'a' <= input.toLowerCase() && input.toLowerCase() <= 'g') )return null;
 
-        return [a, b];
+        let b = input[input.length - 1].toLowerCase().charCodeAt(0) - 97;
+
+        return [0, b];
     }
 }
 

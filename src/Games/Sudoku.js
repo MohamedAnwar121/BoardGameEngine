@@ -6,7 +6,6 @@ class Sudoku extends GameEngine {
     constructor(props) {
         super(props);
         this.singlePlayer = true;
-        this.board.
 
         this.initializeGamePieces();
         this.initializeComponentState();
@@ -23,26 +22,41 @@ class Sudoku extends GameEngine {
         // b >> col.
         // c >> number inserted.
 
-        const [string1, string2] = input.split(" ");
+        // invalid case
+        if(input.length === 0)return null;
 
-        let b = string1[ string1.length - 1 ].toLowerCase().charCodeAt(0) - 97;
-        let a = Number(string1.substring(0, string1.length - 1)) - 1;
-        let c = Number(string2);
+        // invalid case
+        if(input.split(" ").length !== 3)return null;
 
-        if (!(c >= 0 && c <= 9)) {
-            alert('enter a valid number');
-            return null;
-        }
+        const [string1, string2, string3] = input.split(" ");
+
+        // invalid cases
+        if( isNaN(string1) )return null;
+        if( isNaN(string3) )return null;
+        if( !(string2.length === 1 && 'a' <= string2.toLowerCase() && string2.toLowerCase() <= 'z') )return null;
+
+        let b = string2.toLowerCase().charCodeAt(0) - 97;
+        let a = Number(string1) - 1;
+        let c = Number(string3);
+
+        // invalid cases
+        if( !(0 <= a && a <= 8) )return null;
+        if( !(0 <= b && b <= 8) )return null;
+        if( !(1 <= c && c <= 9) )return null;
 
         return [a, b, c];
     }
     controller(input) {
 
-        if (this.getInput(input) === null) return;
+        let index = this.getInput(input);
+        if (index === null) {
+            alert("XX not valid input XX");
+            return;
+        }
 
-        let rowIndex = this.getInput(input)[0];
-        let colIndex = this.getInput(input)[1];
-        let numberInserted = this.getInput(input)[2];
+        let rowIndex = index[0];
+        let colIndex = index[1];
+        let numberInserted = index[2];
 
 
         if (this.state.grid[rowIndex][colIndex] !== 0 &&

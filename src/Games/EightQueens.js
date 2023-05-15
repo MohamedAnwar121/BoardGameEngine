@@ -12,9 +12,14 @@ class EightQueens extends GameEngine {
 
     controller(input) {
 
+        let index = this.getInput(input);
+        if (index === null) {
+            alert("XX not valid input XX");
+            return;
+        }
 
-        let rowIndex = this.getInput(input)[0];
-        let colIndex = this.getInput(input)[1];
+        let rowIndex = index[0];
+        let colIndex = index[1];
 
 
         if (this.state.grid[rowIndex][colIndex] !== null) {
@@ -92,8 +97,26 @@ class EightQueens extends GameEngine {
     }
 
     getInput(input) {
-        let b = input[input.length - 1].toLowerCase().charCodeAt(0) - 97;
-        let a = Number(input.substring(0, input.length - 1)) - 1;
+
+        // invalid case
+        if(input.length === 0)return null;
+
+        // invalid case
+        if(input.split(" ").length !== 2)return null;
+
+        const [string1, string2] = input.split(" ");
+
+        // invalid cases
+        if( isNaN(string1) )return null;
+        if( !(string2.length === 1 && 'a' <= string2.toLowerCase() && string2.toLowerCase() <= 'z') )return null;
+
+        let b = string2.toLowerCase().charCodeAt(0) - 97;
+        let a = Number(string1) - 1;
+
+        // invalid cases
+        if( !(0 <= a && a <= 7) )return null;
+        if( !(0 <= b && b <= 7) )return null;
+
         return [a, b];
     }
 
