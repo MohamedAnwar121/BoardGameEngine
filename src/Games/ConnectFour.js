@@ -14,49 +14,48 @@ class ConnectFour extends GameEngine{
         this.initializeComponentState("R");
         this.controller = this.controller.bind(this);
     }
-    controller(input){
+    controller(input, state){
 
-        console.log(this.state)
+        // console.log(this.state)
 
         let index = this.getInput(input);
         if (index === null) {
             alert("XX not valid input XX");
-            return;
+            return state;
         }
 
         let rowIndex = index[0];
         let colIndex = index[1];
 
 
-        if( this.state.grid[rowIndex][colIndex] !== null ){
+        if( state.grid[rowIndex][colIndex] !== null ){
             alert('error in position');
-            return;
+            return state;
         }
 
         let newRowIndex = Math.max(this.lastCircleOnEachCol[colIndex],rowIndex);
         this.lastCircleOnEachCol[colIndex] = Math.max(newRowIndex-1,0);
 
-        this.state.grid[newRowIndex][colIndex] = this.state.playerState.currentPiece;
-        // this.setState({ grid: this.state.grid });
+        state.grid[newRowIndex][colIndex] = state.playerState.currentPiece;
+        // this.setState({ grid: state.grid });
 
-        this.switchTurn();
+        this.switchTurn(state);
 
-        return this.state;
+        return state;
     }
-
-    switchTurn(){
-        if( this.state.playerState.playerTurn === this.turn.player1 ){
-            this.state.playerState.currentPiece = this.gamePieces.yellowCircle;
-            this.state.playerState.playerTurn = this.turn.player2;
-        } else {
-            this.state.playerState.currentPiece = this.gamePieces.redCircle;
-            this.state.playerState.playerTurn = this.turn.player1;
-        }
-    }
-
     drawer(state){
         this.setState(state);
-        return super.drawer();
+        return super.drawer(state);
+    }
+
+    switchTurn(state){
+        if( state.playerState.playerTurn === this.turn.player1 ){
+            state.playerState.currentPiece = this.gamePieces.yellowCircle;
+            state.playerState.playerTurn = this.turn.player2;
+        } else {
+            state.playerState.currentPiece = this.gamePieces.redCircle;
+            state.playerState.playerTurn = this.turn.player1;
+        }
     }
 
     render() {return super.render()}

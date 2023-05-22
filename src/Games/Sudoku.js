@@ -14,7 +14,6 @@ class Sudoku extends GameEngine {
         this.initializeGridWithKEmptyCells(40);
 
         this.controller = this.controller.bind(this);
-        this.recordInput = this.recordInput.bind(this);
     }
 
     getInput(input) {
@@ -46,12 +45,12 @@ class Sudoku extends GameEngine {
 
         return [a, b, c];
     }
-    controller(input) {
+    controller(input, state) {
 
         let index = this.getInput(input);
         if (index === null) {
             alert("XX not valid input XX");
-            return;
+            return state;
         }
 
         let rowIndex = index[0];
@@ -59,21 +58,21 @@ class Sudoku extends GameEngine {
         let numberInserted = index[2];
 
 
-        if (this.state.grid[rowIndex][colIndex] !== 0 &&
-            this.state.grid[rowIndex][colIndex] === this.initialGrid[rowIndex][colIndex]) {
+        if (state.grid[rowIndex][colIndex] !== 0 &&
+            state.grid[rowIndex][colIndex] === this.initialGrid[rowIndex][colIndex]) {
             alert('cannot be overridden');
-            return;
+            return state;
         }
 
 
         if (this.rowSet[rowIndex].has(numberInserted)) {
             alert('error in position');
-            return;
+            return state;
         }
 
         if (this.colSet[colIndex].has(numberInserted)) {
             alert('error in position');
-            return;
+            return state;
         }
 
         let squareIndex =
@@ -81,34 +80,28 @@ class Sudoku extends GameEngine {
 
         if (this.squareSet[squareIndex].has(numberInserted)) {
             alert('error in position');
-            return;
+            return state;
         }
 
-        if (this.state.grid[rowIndex][colIndex] !== 0){
-            this.rowSet[rowIndex].delete(parseInt(this.state.grid[rowIndex][colIndex]));
-            this.colSet[colIndex].delete(parseInt(this.state.grid[rowIndex][colIndex]));
-            this.squareSet[squareIndex].delete(parseInt(this.state.grid[rowIndex][colIndex]));
+        if (state.grid[rowIndex][colIndex] !== 0){
+            this.rowSet[rowIndex].delete(parseInt(state.grid[rowIndex][colIndex]));
+            this.colSet[colIndex].delete(parseInt(state.grid[rowIndex][colIndex]));
+            this.squareSet[squareIndex].delete(parseInt(state.grid[rowIndex][colIndex]));
         }
 
-        this.state.grid[rowIndex][colIndex] = numberInserted;
+        state.grid[rowIndex][colIndex] = numberInserted;
         // this.setState({grid: this.state.grid});
 
         this.rowSet[rowIndex].add(numberInserted);
         this.colSet[colIndex].add(numberInserted);
         this.squareSet[squareIndex].add(numberInserted);
 
-        return this.state;
+        return state;
     }
-
-    recordInput(event) {
-        this.state.input = event.currentTarget.id;
-        this.setState({input: this.state.input});
-    }
-
 
     drawer(state){
         this.setState(state);
-        return super.drawer();
+        return super.drawer(state);
     }
 
     render() {return super.render()}

@@ -10,6 +10,11 @@ import {Component} from 'react';
     // checkers >> 8 h 8 h
 
 // starter color handle.
+    // any another non valid input make:
+        // xo: o
+        // chess: b
+        // connect - 4 : yellow
+        // chess: b
 
 class GameEngine extends Component {
 
@@ -218,11 +223,13 @@ class GameEngine extends Component {
         }
 
         // game start.
+        let state = this.state;
         while (true) {
+
             let input = await this.waitForEvent("                                        << Enter input >>");
             if (input === null) break;
 
-            let state = this.controller(input);
+            state = this.controller(input, state);
             this.drawer(state);
         }
     }

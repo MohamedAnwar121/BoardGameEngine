@@ -9,15 +9,15 @@ class Chess extends GameEngine {
         this.initializeComponentState("W");
     }
 
-    controller(input) {
+    controller(input, state) {
 
         let index = this.getInput(input);
         if (index === null) {
             alert("XX not valid input XX");
-            return;
+            return state;
         }
 
-        console.log(this.state)
+        console.log(state)
 
         let source = index[0];
         let dest = index[1];
@@ -26,19 +26,19 @@ class Chess extends GameEngine {
         let destX = dest[0], destY = dest[1];
 
 
-        let playerTurnObj = this.state.playerState.playerTurn;
-        let playerSetObj = this.state.playerState.playerPieces;
+        let playerTurnObj = state.playerState.playerTurn;
+        let playerSetObj = state.playerState.playerPieces;
 
 
         let curPlayerTurnSet = ((playerTurnObj === this.turn.player1) ? playerSetObj.player1 : playerSetObj.player2);
-        if (!curPlayerTurnSet.has(this.state.grid[sourceX][sourceY])) {
+        if (!curPlayerTurnSet.has(state.grid[sourceX][sourceY])) {
             alert('null or opponent piece access');
-            return this.state;
+            return state;
         }
 
         let doneAMove = false;
 
-        for (const [key, value] of this.pieceRule[this.state.grid[sourceX][sourceY]].entries()) {
+        for (const [key, value] of this.pieceRule[state.grid[sourceX][sourceY]].entries()) {
 
             let destinationPointRow = null;
             let destinationPointCol = null;
@@ -53,24 +53,24 @@ class Chess extends GameEngine {
 
                 if (destinationPointRow === destX && destinationPointCol === destY){
 
-                    if (this.state.grid[destinationPointRow][destinationPointCol] === null) {
+                    if (state.grid[destinationPointRow][destinationPointCol] === null) {
 
                         // update grid
-                        this.state.grid[destinationPointRow][destinationPointCol] = this.state.grid[sourceX][sourceY];
-                        this.state.grid[sourceX][sourceY] = null;
-                        this.switchTurn();
+                        state.grid[destinationPointRow][destinationPointCol] = state.grid[sourceX][sourceY];
+                        state.grid[sourceX][sourceY] = null;
+                        this.switchTurn(state);
 
                         doneAMove = true;
                         break;
                     }
 
-                    if (this.checkIfOpponentPiece(playerTurnObj, playerSetObj, destinationPointRow, destinationPointCol)) {
-                        this.pushEatenPiece(this.state.grid[destinationPointRow][destinationPointCol]);
+                    if (this.checkIfOpponentPiece(playerTurnObj, playerSetObj, destinationPointRow, destinationPointCol, state)) {
+                        this.pushEatenPiece(state.grid[destinationPointRow][destinationPointCol], state);
 
                         // update grid
-                        this.state.grid[destinationPointRow][destinationPointCol] = this.state.grid[sourceX][sourceY];
-                        this.state.grid[sourceX][sourceY] = null;
-                        this.switchTurn();
+                        state.grid[destinationPointRow][destinationPointCol] = state.grid[sourceX][sourceY];
+                        state.grid[sourceX][sourceY] = null;
+                        this.switchTurn(state);
 
 
                         doneAMove = true;
@@ -78,7 +78,7 @@ class Chess extends GameEngine {
 
                     } else {
                         alert('can\'t eat your piece');
-                        return this.state;
+                        return state;
                     }
 
                 }
@@ -103,120 +103,121 @@ class Chess extends GameEngine {
 
                     if (rowIndex === destinationPointRow && colIndex === destinationPointCol) {
 
-                        if (this.state.grid[destinationPointRow][destinationPointCol] === null) {
+                        if (state.grid[destinationPointRow][destinationPointCol] === null) {
 
                             console.log(this.state.grid)
 
                             // update grid
-                            this.state.grid[destinationPointRow][destinationPointCol] = this.state.grid[sourceX][sourceY];
-                            this.state.grid[sourceX][sourceY] = null;
-                            this.switchTurn();
+                            state.grid[destinationPointRow][destinationPointCol] = state.grid[sourceX][sourceY];
+                            state.grid[sourceX][sourceY] = null;
+                            this.switchTurn(state);
 
                             doneAMove = true;
 
                             break;
                         } else if (this.checkIfOpponentPiece
-                        (playerTurnObj, playerSetObj, rowIndex, colIndex)) {
+                        (playerTurnObj, playerSetObj, rowIndex, colIndex, state)) {
 
-                            this.pushEatenPiece(this.state.grid[destinationPointRow][destinationPointCol]);
+                            this.pushEatenPiece(state.grid[destinationPointRow][destinationPointCol], state);
 
                             console.log('inside eat');
 
                             // update grid
-                            this.state.grid[destinationPointRow][destinationPointCol] = this.state.grid[sourceX][sourceY];
-                            this.state.grid[sourceX][sourceY] = null;
-                            this.switchTurn();
+                            state.grid[destinationPointRow][destinationPointCol] = state.grid[sourceX][sourceY];
+                            state.grid[sourceX][sourceY] = null;
+                            this.switchTurn(state);
 
                             doneAMove = true;
                             break;
                         }
                         else {
                             alert('can\'t eat your piece');
-                            return this.state;
+                            return state;
                         }
                     }
-                    else if (this.state.grid[rowIndex][colIndex] !== null
+                    else if (state.grid[rowIndex][colIndex] !== null
                         && (rowIndex !== sourceX || colIndex !== sourceY)) {
                         break;
                     }
 
 
-                    if( 0 === sourceX && sourceY === 0 && destX === 0 && destY === 3 ){
-                        console.log(this.state.grid[rowIndex][colIndex]);
-                        console.log(rowIndex)
-                        console.log(colIndex)
-                        console.log(this.state)
-                    }
+                    // if( 0 === sourceX && sourceY === 0 && destX === 0 && destY === 3 ){
+                    //     console.log(this.state.grid[rowIndex][colIndex]);
+                    //     console.log(rowIndex)
+                    //     console.log(colIndex)
+                    //     console.log(this.state)
+                    // }
                 }
 
                 if (doneAMove) break;
             }
         }
 
-        if (this.state.grid[sourceX][sourceY] === this.gamePieces.whitePawn
-            || this.state.grid[sourceX][sourceY] === this.gamePieces.blackPawn){
-            doneAMove = this.handlePawnMoves(this.state.grid[sourceX][sourceY] , sourceX , sourceY ,destX , destY);
+        if (state.grid[sourceX][sourceY] === this.gamePieces.whitePawn
+            || state.grid[sourceX][sourceY] === this.gamePieces.blackPawn){
+            doneAMove = this.handlePawnMoves(state.grid[sourceX][sourceY] , sourceX , sourceY ,destX , destY, state);
         }
 
         if (!doneAMove) {
             alert('invalid move');
-            return this.state;
+            return state;
         }
 
         // update state
 
-        console.log(this.state.playerState);
 
         // new state
         return {
-            grid : this.state.grid,
+            grid : state.grid,
             playerState: {
-                playerTurn: this.state.playerState.playerTurn,
+                playerTurn: state.playerState.playerTurn,
                 playerPieces: {
-                    player1: this.state.playerState.playerPieces.player1,
-                    player2: this.state.playerState.playerPieces.player2
+                    player1: state.playerState.playerPieces.player1,
+                    player2: state.playerState.playerPieces.player2
                 },
                 piecesEaten: {
-                    player1: this.state.playerState.piecesEaten.player1,
-                    player2: this.state.playerState.piecesEaten.player2
+                    player1: state.playerState.piecesEaten.player1,
+                    player2: state.playerState.piecesEaten.player2
                 }
             }
         }
     }
 
+    drawer(state){
+        this.setState(state);
+        return super.drawer(state);
+    }
+
     isInRange(i, j, n, m) {
         return i >= 0 && j >= 0 && i < n && i < m;
     }
-
-    checkIfOpponentPiece(playerTurnObj, playerSetObj, destinationPointRow, destinationPointCol) {
+    checkIfOpponentPiece(playerTurnObj, playerSetObj, destinationPointRow, destinationPointCol, state) {
 
         console.log(playerTurnObj , playerSetObj);
 
         console.log(destinationPointRow, destinationPointCol)
 
-        console.log(this.state)
+        console.log(state)
 
-        console.log(this.state.grid[destinationPointRow][destinationPointCol])
+        console.log(state.grid[destinationPointRow][destinationPointCol])
         if (playerTurnObj === this.turn.player1) {
-            console.log(playerSetObj.player2.has(this.state.grid[destinationPointRow][destinationPointCol]))
+            console.log(playerSetObj.player2.has(state.grid[destinationPointRow][destinationPointCol]))
         } else {
-            console.log(playerSetObj.player1.has(this.state.grid[destinationPointRow][destinationPointCol]))
+            console.log(playerSetObj.player1.has(state.grid[destinationPointRow][destinationPointCol]))
         }
 
         return ((playerTurnObj === this.turn.player1)
             ? playerSetObj.player2 : playerSetObj.player1)
-            .has(this.state.grid[destinationPointRow][destinationPointCol])
+            .has(state.grid[destinationPointRow][destinationPointCol])
     }
-
-    pushEatenPiece(val) {
-        let piecesEaten = this.state.playerState.piecesEaten;
-        if (this.state.playerState.playerTurn === this.turn.player1)
+    pushEatenPiece(val, state) {
+        let piecesEaten = state.playerState.piecesEaten;
+        if (state.playerState.playerTurn === this.turn.player1)
             piecesEaten.player1.push(val);
         else
             piecesEaten.player2.push(val);
     }
-
-    handlePawnMoves(piece, sourceX, sourceY, destX, destY) {
+    handlePawnMoves(piece, sourceX, sourceY, destX, destY, state) {
 
         let doneAMove = false;
 
@@ -226,12 +227,12 @@ class Chess extends GameEngine {
 
         if (sourceX + moveSet[0]  === destX &&  sourceY + moveSet[1] === destY){
 
-            if (this.state.grid[destX][destY] === null) {
+            if (state.grid[destX][destY] === null) {
                 // update grid
 
-                this.state.grid[destX][destY] = this.state.grid[sourceX][sourceY];
-                this.state.grid[sourceX][sourceY] = null;
-                this.switchTurn();
+                state.grid[destX][destY] = state.grid[sourceX][sourceY];
+                state.grid[sourceX][sourceY] = null;
+                this.switchTurn(state);
 
                 doneAMove = true;
             }
@@ -245,15 +246,15 @@ class Chess extends GameEngine {
 
         for (let i = 0; i < 2; i++) {
             if (moveSet[i][0] + sourceX === destX && moveSet[i][1] + sourceY === destY
-                && this.checkIfOpponentPiece(this.state.playerState.playerTurn ,
-                    this.state.playerState.playerPieces ,
-                    destX,destY)) {
-                this.pushEatenPiece(this.state.grid[destX][destY]);
+                && this.checkIfOpponentPiece(state.playerState.playerTurn ,
+                    state.playerState.playerPieces ,
+                    destX,destY, state)) {
+                this.pushEatenPiece(state.grid[destX][destY], state);
 
                 // update grid
-                this.state.grid[destX][destY] = this.state.grid[sourceX][sourceY];
-                this.state.grid[sourceX][sourceY] = null;
-                this.switchTurn();
+                state.grid[destX][destY] = state.grid[sourceX][sourceY];
+                state.grid[sourceX][sourceY] = null;
+                this.switchTurn(state);
 
                 doneAMove = true;
 
@@ -266,13 +267,13 @@ class Chess extends GameEngine {
         if (piece === this.gamePieces.whitePawn && sourceX === 6){
 
             if (sourceX - 2 === destX
-                && this.state.grid[4][sourceY] === null
-                && this.state.grid[5][sourceY] === null ) {
+                && state.grid[4][sourceY] === null
+                && state.grid[5][sourceY] === null ) {
 
                 // update grid
-                this.state.grid[destX][destY] = this.state.grid[sourceX][sourceY];
-                this.state.grid[sourceX][sourceY] = null;
-                this.switchTurn();
+                state.grid[destX][destY] = state.grid[sourceX][sourceY];
+                state.grid[sourceX][sourceY] = null;
+                this.switchTurn(state);
 
                 doneAMove = true;
             }
@@ -280,13 +281,13 @@ class Chess extends GameEngine {
         } else if (piece === this.gamePieces.blackPawn && sourceX === 1){
 
             if (sourceX + 2 === destX
-                && this.state.grid[2][sourceY] === null
-                && this.state.grid[3][sourceY] === null ) {
+                && state.grid[2][sourceY] === null
+                && state.grid[3][sourceY] === null ) {
 
                 // update grid
-                this.state.grid[destX][destY] = this.state.grid[sourceX][sourceY];
-                this.state.grid[sourceX][sourceY] = null;
-                this.switchTurn();
+                state.grid[destX][destY] = state.grid[sourceX][sourceY];
+                state.grid[sourceX][sourceY] = null;
+                this.switchTurn(state);
 
                 doneAMove = true;
             }
@@ -296,10 +297,10 @@ class Chess extends GameEngine {
 
         if (doneAMove){
             if (piece === this.gamePieces.whitePawn){
-                if (destX === 0) this.state.grid[destX][destY] = this.gamePieces.whiteQueen;
+                if (destX === 0) state.grid[destX][destY] = this.gamePieces.whiteQueen;
             }
             else if (piece === this.gamePieces.blackPawn){
-                if (destX === 7) this.state.grid[destX][destY] = this.gamePieces.blackQueen;
+                if (destX === 7) state.grid[destX][destY] = this.gamePieces.blackQueen;
             }
         }
 
@@ -307,17 +308,12 @@ class Chess extends GameEngine {
         return doneAMove;
     }
 
-    switchTurn() {
-        this.state.playerState.playerTurn =
-            (this.state.playerState.playerTurn === this.turn.player1 ? this.turn.player2 : this.turn.player1);
+    switchTurn(state) {
+        state.playerState.playerTurn =
+            (state.playerState.playerTurn === this.turn.player1 ? this.turn.player2 : this.turn.player1);
     }
 
-
-    drawer(state){
-        this.setState(state);
-        return super.drawer();
-    }
-
+/////////////////////////////////////////////////////////////////
     render() {return super.render()}
 
     initializePiecesRules() {
@@ -434,7 +430,6 @@ class Chess extends GameEngine {
 
         this.startState(chosenPieces);
 
-        console.log(this.state);
     }
     startState(chosenPieces) {
         console.log(chosenPieces)

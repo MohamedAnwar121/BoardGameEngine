@@ -14,79 +14,8 @@ class Checkers extends GameEngine{
         console.log('constructor ends.')
     }
 
+    controller(input, state){
 
-    isInRange(i, j, n, m) {
-        return i >= 0 && j >= 0 && i < n && i < m;
-    }
-    checkIfOpponentPiece(playerTurnObj, playerSetObj, destinationPointRow, destinationPointCol) {
-        return ((playerTurnObj === this.turn.player1)
-            ? playerSetObj.player2 : playerSetObj.player1)
-            .has(this.state.grid[destinationPointRow][destinationPointCol])
-    }
-
-    turnSwitch(){
-        let newTurn;
-        if ( this.state.playerState.playerTurn === this.turn.player1 ){
-            return newTurn = this.turn.player2;
-        } else {
-            return newTurn = this.turn.player1;
-        }
-    }
-    stateUpdate() {
-        this.state.playerState.playerTurn = this.turnSwitch()
-        console.log(this.state.playerState.playerTurn)
-        console.log(this.state.playerState.playerPieces)
-        this.state = {
-            grid: this.state.grid,
-            playerState: {
-                // turn switch
-                playerTurn: this.state.playerState.playerTurn,
-                playerPieces: this.state.playerState.playerPieces
-            }
-        };
-        // console.log(this.state.playerState.playerPieces)
-        console.log(this.state.playerState.playerTurn)
-    }
-    DFS(visitedGrid, currentRow, currentCol, sourceRow, sourceCol, goalRow, goalCol){
-        // visited
-        visitedGrid[currentRow][currentCol] = true;
-        console.log(this.state.playerState.playerPieces)
-
-        let playerState = this.state.playerState;
-        let isGoalPositionDetected = false;
-        for (const [key, value] of this.pieceRule[ this.state.grid[sourceRow][sourceCol] ].entries()){
-            let destinationPointRow = currentRow + key.move[0];
-            let destinationPointCol = currentCol + key.move[1];
-            if (  !this.isInRange(destinationPointRow, destinationPointCol, this.board.rows, this.board.cols) )continue;
-            else if( visitedGrid[destinationPointRow][destinationPointCol] )continue;
-            else if( key.skip ){
-                // exists(above), empty and opponent in middle
-                if(    this.state.grid[destinationPointRow][destinationPointCol] === null
-                    && this.checkIfOpponentPiece(playerState.playerTurn, playerState.playerPieces, (destinationPointRow + currentRow) / 2, (destinationPointCol + currentCol) / 2) ){
-
-                    if( destinationPointRow === goalRow && destinationPointCol === goalCol ){
-                        isGoalPositionDetected ||= true;// update
-                        if( isGoalPositionDetected ){
-                            this.state.grid[ (destinationPointRow + currentRow)/2 ][ (destinationPointCol + currentCol)/2 ] = null;
-                            return isGoalPositionDetected;
-                        }
-                    } else {
-                        isGoalPositionDetected ||= this.DFS(visitedGrid, destinationPointRow, destinationPointCol, sourceRow, sourceCol, goalRow, goalCol);
-                        if( isGoalPositionDetected ){
-                            // remove intermediate
-                            this.state.grid[ (destinationPointRow + currentRow)/2 ][ (destinationPointCol + currentCol)/2 ] = null;
-                            return isGoalPositionDetected;
-                        }
-                    }
-
-                }
-            }
-        }
-        return isGoalPositionDetected;
-    }
-    controller(input){
-
-        console.log(this.state)
 
         // >>>>>>>>>>>>>>>>>>>>> logic >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -114,7 +43,7 @@ class Checkers extends GameEngine{
 
         if (index === null) {
             alert("XX not valid input XX");
-            return;
+            return state;
         }
 
         let source = index[0];
@@ -128,25 +57,25 @@ class Checkers extends GameEngine{
 
         // validation part.
         console.log( 'in selection step' )
-        let playerTurnObj = this.state.playerState.playerTurn;
-        let playerSetObj = this.state.playerState.playerPieces;
-        console.log('no held piece: ' + this.state.playerState.playerPieces)
+        let playerTurnObj = state.playerState.playerTurn;
+        let playerSetObj = state.playerState.playerPieces;
+        console.log('no held piece: ' + state.playerState.playerPieces)
         let curPlayerTurnSet = ( (playerTurnObj === this.turn.player1)? playerSetObj.player1 : playerSetObj.player2 );
-        if( !curPlayerTurnSet.has( this.state.grid[sourceX][sourceY] ) ){
+        if( !curPlayerTurnSet.has( state.grid[sourceX][sourceY] ) ){
             alert('null or opponent piece access');
-            return this.state;
+            return state;
         }
 
         // check if the current user can move current piece or not part.
         let humanStep = false;
-        for (const [key, value] of this.pieceRule[ this.state.grid[sourceX][sourceY] ].entries()) {
+        for (const [key, value] of this.pieceRule[ state.grid[sourceX][sourceY] ].entries()) {
             let destinationPointRow = sourceX + key.move[0];
             let destinationPointCol = sourceY + key.move[1];
             if( key.skip ){
                 // exists, empty and opponent in middle
                 if(    this.isInRange(destinationPointRow, destinationPointCol, this.board.rows, this.board.cols)
-                    && this.state.grid[destinationPointRow][destinationPointCol] === null
-                    && this.checkIfOpponentPiece(playerTurnObj, playerSetObj, (destinationPointRow + sourceX) / 2, (destinationPointCol + sourceY) / 2) ){
+                    && state.grid[destinationPointRow][destinationPointCol] === null
+                    && this.checkIfOpponentPiece(playerTurnObj, playerSetObj, (destinationPointRow + sourceX) / 2, (destinationPointCol + sourceY) / 2, state) ){
                     pieceEats = true;
                 }
 
@@ -154,7 +83,7 @@ class Checkers extends GameEngine{
                 // console.log('humanStep is true when' + destinationPointRow + ' ' + destinationPointCol )
                 // exists and empty
                 if(    this.isInRange(destinationPointRow, destinationPointCol, this.board.rows, this.board.cols)
-                    && this.state.grid[destinationPointRow][destinationPointCol] === null){
+                    && state.grid[destinationPointRow][destinationPointCol] === null){
                     humanStep = true;
                 }
             }
@@ -169,17 +98,17 @@ class Checkers extends GameEngine{
                 for (let j = 0; j < this.board.cols; j++) {
 
                     // piece of grid cell belongs to cur player
-                    if( curPlayerTurnSet.has(this.state.grid[i][j]) ){
+                    if( curPlayerTurnSet.has(state.grid[i][j]) ){
                         // console.log( 'in check others if one can eat' + i + ' ' + j );
-                        for (const [key, value] of this.pieceRule[ this.state.grid[i][j] ].entries()) {
+                        for (const [key, value] of this.pieceRule[ state.grid[i][j] ].entries()) {
                             let destinationPointRow = i + key.move[0];
                             let destinationPointCol = j + key.move[1];
                             if( key.skip ){
                                 console.log (i + " " + j + " " + destinationPointRow + " " + destinationPointCol  + " " +  (destinationPointRow + i) / 2 + " " + (destinationPointCol + j) / 2)
                                 // exists, empty and opponent in middle
                                 if(    this.isInRange(destinationPointRow, destinationPointCol, this.board.rows, this.board.cols)
-                                    && this.state.grid[destinationPointRow][destinationPointCol] === null
-                                    && this.checkIfOpponentPiece(playerTurnObj, playerSetObj, (destinationPointRow + i) / 2, (destinationPointCol + j) / 2) ){
+                                    && state.grid[destinationPointRow][destinationPointCol] === null
+                                    && this.checkIfOpponentPiece(playerTurnObj, playerSetObj, (destinationPointRow + i) / 2, (destinationPointCol + j) / 2, state) ){
                                     anotherEats = true;
                                 }
                             }
@@ -190,16 +119,16 @@ class Checkers extends GameEngine{
 
             if( anotherEats ){
                 alert('another one can eat');
-                return this.state;
+                return state;
             }
             else {
                 console.log("before normal move:")
-                console.log(this.state.playerState.playerPieces)
+                console.log(state.playerState.playerPieces)
             }
         }
         else {
             alert('all directions blocked');
-            return this.state;
+            return state;
         }
 
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> select destination >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -207,26 +136,26 @@ class Checkers extends GameEngine{
 
             // iterate on possible moves to check if the user selected cell can move to it.
             let moveEnded = false;
-            for (const [key, value] of this.pieceRule[ this.state.grid[ sourceX ][ sourceY ] ].entries()) {
+            for (const [key, value] of this.pieceRule[ state.grid[ sourceX ][ sourceY ] ].entries()) {
 
                 let destinationPointRow = sourceX + key.move[0];
                 let destinationPointCol = sourceY + key.move[1];
                 if( destinationPointRow === destX
                     && destinationPointCol === destY
-                    && this.state.grid[ destinationPointRow ][ destinationPointCol ] === null
+                    && state.grid[ destinationPointRow ][ destinationPointCol ] === null
                     && !key.skip ){
 
                     moveEnded = true;
-                    this.state.grid[ destinationPointRow ][ destinationPointCol ] = this.state.grid[ sourceX ][ sourceY ];
-                    this.state.grid[ sourceX ][ sourceY ] = null;
-                    this.stateUpdate();
+                    state.grid[ destinationPointRow ][ destinationPointCol ] = state.grid[ sourceX ][ sourceY ];
+                    state.grid[ sourceX ][ sourceY ] = null;
+                    this.stateUpdate(state);
 
                 }
             }
 
             if( !moveEnded ){
                 alert('not a valid destination in normal move.');
-                return this.state;
+                return state;
             }
 
         }
@@ -234,62 +163,103 @@ class Checkers extends GameEngine{
 
             // visited array construction.
             const visitedGrid = Array.from(Array(this.board.rows), () => new Array(this.board.cols).fill(null));
-            let validEat = this.DFS(visitedGrid, sourceX, sourceY, sourceX, sourceY, destX, destY);
+            let validEat = this.DFS(visitedGrid, sourceX, sourceY, sourceX, sourceY, destX, destY, state);
             // remain eating
             if ( validEat ){
 
-                this.state.grid[ destX ][ destY ] = this.state.grid[ sourceX ][ sourceY ];
-                this.state.grid[ sourceX ][ sourceY ] = null;
-                this.stateUpdate();
+                state.grid[ destX ][ destY ] = state.grid[ sourceX ][ sourceY ];
+                state.grid[ sourceX ][ sourceY ] = null;
+                this.stateUpdate(state);
 
             } else {
 
                 alert('not a valid destination in eating.');
-                return this.state;
+                return state;
             }
         }
 
-        return this.state;
+        return state;
     }
 
     drawer(state){
         this.setState(state);
-        return super.drawer();
+        return super.drawer(state);
     }
+
+    isInRange(i, j, n, m) {
+        return i >= 0 && j >= 0 && i < n && i < m;
+    }
+    checkIfOpponentPiece(playerTurnObj, playerSetObj, destinationPointRow, destinationPointCol, state) {
+        return ((playerTurnObj === this.turn.player1)
+            ? playerSetObj.player2 : playerSetObj.player1)
+            .has(state.grid[destinationPointRow][destinationPointCol])
+    }
+
+    turnSwitch(state){
+        let newTurn;
+        if ( state.playerState.playerTurn === this.turn.player1 ){
+            return newTurn = this.turn.player2;
+        } else {
+            return newTurn = this.turn.player1;
+        }
+    }
+    stateUpdate(state) {
+        state.playerState.playerTurn = this.turnSwitch(state)
+        console.log(state.playerState.playerTurn)
+        console.log(state.playerState.playerPieces)
+        state = {
+            grid: state.grid,
+            playerState: {
+                // turn switch
+                playerTurn: state.playerState.playerTurn,
+                playerPieces: state.playerState.playerPieces
+            }
+        };
+        // console.log(this.state.playerState.playerPieces)
+        console.log(state.playerState.playerTurn)
+    }
+    DFS(visitedGrid, currentRow, currentCol, sourceRow, sourceCol, goalRow, goalCol, state){
+        // visited
+        visitedGrid[currentRow][currentCol] = true;
+        console.log(state.playerState.playerPieces)
+
+        let playerState = state.playerState;
+        let isGoalPositionDetected = false;
+        for (const [key, value] of this.pieceRule[ state.grid[sourceRow][sourceCol] ].entries()){
+            let destinationPointRow = currentRow + key.move[0];
+            let destinationPointCol = currentCol + key.move[1];
+            if (  !this.isInRange(destinationPointRow, destinationPointCol, this.board.rows, this.board.cols) )continue;
+            else if( visitedGrid[destinationPointRow][destinationPointCol] )continue;
+            else if( key.skip ){
+                // exists(above), empty and opponent in middle
+                if(    state.grid[destinationPointRow][destinationPointCol] === null
+                    && this.checkIfOpponentPiece(playerState.playerTurn, playerState.playerPieces, (destinationPointRow + currentRow) / 2, (destinationPointCol + currentCol) / 2, state) ){
+
+                    if( destinationPointRow === goalRow && destinationPointCol === goalCol ){
+                        isGoalPositionDetected ||= true;// update
+                        if( isGoalPositionDetected ){
+                            state.grid[ (destinationPointRow + currentRow)/2 ][ (destinationPointCol + currentCol)/2 ] = null;
+                            return isGoalPositionDetected;
+                        }
+                    } else {
+                        isGoalPositionDetected ||= this.DFS(visitedGrid, destinationPointRow, destinationPointCol, sourceRow, sourceCol, goalRow, goalCol, state);
+                        if( isGoalPositionDetected ){
+                            // remove intermediate
+                            state.grid[ (destinationPointRow + currentRow)/2 ][ (destinationPointCol + currentCol)/2 ] = null;
+                            return isGoalPositionDetected;
+                        }
+                    }
+
+                }
+            }
+        }
+        return isGoalPositionDetected;
+    }
+
 
     render() {return super.render()}
 
-    getInput(input) {
-        // invalid case
-        if(input.length === 0)return null;
 
-        // invalid case
-        if(input.split(" ").length !== 4)return null;
-
-        const [string1, string2, string3, string4] = input.split(" ");
-
-        console.log(string1, string2, string3, string4)
-
-        // invalid cases
-        if( isNaN(string1) )return null;
-        if( isNaN(string3) )return null;
-        if( !(string2.length === 1 && 'a' <= string2.toLowerCase() && string2.toLowerCase() <= 'z') )return null;
-        if( !(string4.length === 1 && 'a' <= string4.toLowerCase() && string4.toLowerCase() <= 'z') )return null;
-
-        let b = string2.toLowerCase().charCodeAt(0) - 97;
-        let a = Number(string1) - 1;
-
-        let d = string4.toLowerCase().charCodeAt(0) - 97;
-        let c = Number(string3) - 1;
-
-        // invalid cases
-        if( !(0 <= a && a <= 7) )return null;
-        if( !(0 <= b && b <= 7) )return null;
-        if( !(0 <= c && c <= 7) )return null;
-        if( !(0 <= d && d <= 7) )return null;
-
-        return [[a, b], [c, d]];
-    }
 
     initializeGamePieces() {
         this.gamePieces = {
@@ -390,6 +360,38 @@ class Checkers extends GameEngine{
             {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
         this.piecesSource[this.gamePieces.WHITEKING] = <i className="fa fa-circle text-white " style=
             {{fontSize: this.board.pieceScalar * this.board.cellWidth}}></i>;
+    }
+
+    getInput(input) {
+        // invalid case
+        if(input.length === 0)return null;
+
+        // invalid case
+        if(input.split(" ").length !== 4)return null;
+
+        const [string1, string2, string3, string4] = input.split(" ");
+
+        console.log(string1, string2, string3, string4)
+
+        // invalid cases
+        if( isNaN(string1) )return null;
+        if( isNaN(string3) )return null;
+        if( !(string2.length === 1 && 'a' <= string2.toLowerCase() && string2.toLowerCase() <= 'z') )return null;
+        if( !(string4.length === 1 && 'a' <= string4.toLowerCase() && string4.toLowerCase() <= 'z') )return null;
+
+        let b = string2.toLowerCase().charCodeAt(0) - 97;
+        let a = Number(string1) - 1;
+
+        let d = string4.toLowerCase().charCodeAt(0) - 97;
+        let c = Number(string3) - 1;
+
+        // invalid cases
+        if( !(0 <= a && a <= 7) )return null;
+        if( !(0 <= b && b <= 7) )return null;
+        if( !(0 <= c && c <= 7) )return null;
+        if( !(0 <= d && d <= 7) )return null;
+
+        return [[a, b], [c, d]];
     }
 
 }

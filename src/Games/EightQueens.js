@@ -10,22 +10,22 @@ class EightQueens extends GameEngine {
         this.initializePiecesSource();
     }
 
-    controller(input) {
+    controller(input, state) {
 
         let index = this.getInput(input);
         if (index === null) {
             alert("XX not valid input XX");
-            return;
+            return state;
         }
 
         let rowIndex = index[0];
         let colIndex = index[1];
 
 
-        if (this.state.grid[rowIndex][colIndex] !== null) {
-            this.state.grid[rowIndex][colIndex] = null;
-            this.setState({grid: this.state.grid});
-            return;
+        if (state.grid[rowIndex][colIndex] !== null) {
+            state.grid[rowIndex][colIndex] = null;
+            // this.setState({grid: state.grid});
+            return state;
         }
 
         // invalid play.
@@ -33,43 +33,43 @@ class EightQueens extends GameEngine {
         let isValid = true;
         // [1] row check.
         for (let i = 0; i < this.board.cols; i++) {
-            isValid &&= (this.state.grid[rowIndex][i] === null);
+            isValid &&= (state.grid[rowIndex][i] === null);
         }
         // [2] col check.
         for (let i = 0; i < this.board.rows; i++) {
-            isValid &&= (this.state.grid[i][colIndex] === null);
+            isValid &&= (state.grid[i][colIndex] === null);
         }
         // [3.a] 135` diagonal
         for (let rowDir = rowIndex, colDir = colIndex; rowDir < this.board.rows && colDir < this.board.cols; rowDir++, colDir++) {
-            isValid &&= (this.state.grid[rowDir][colDir] === null);
+            isValid &&= (state.grid[rowDir][colDir] === null);
         }
         // [3.b] 135` diagonal
         for (let rowDir = rowIndex, colDir = colIndex; rowDir >= 0 && colDir >= 0; rowDir--, colDir--) {
-            isValid &&= (this.state.grid[rowDir][colDir] === null);
+            isValid &&= (state.grid[rowDir][colDir] === null);
         }
 
         // [4.a] 45` diagonal
         for (let rowDir = rowIndex, colDir = colIndex; rowDir >= 0 && colDir < this.board.cols; rowDir--, colDir++) {
-            isValid &&= (this.state.grid[rowDir][colDir] === null);
+            isValid &&= (state.grid[rowDir][colDir] === null);
         }
         // [4.b] 45` diagonal
         for (let rowDir = rowIndex, colDir = colIndex; rowDir < this.board.rows && colDir >= 0; rowDir++, colDir--) {
-            console.log(rowDir, colDir, this.state.grid[rowDir][colDir]);
-            isValid &&= (this.state.grid[rowDir][colDir] === null);
+            console.log(rowDir, colDir, state.grid[rowDir][colDir]);
+            isValid &&= (state.grid[rowDir][colDir] === null);
         }
 
         if (!isValid) {
             alert('error in position');
-            return;
+            return state;
         }
-        this.state.grid[rowIndex][colIndex] = this.gamePieces.queen
+        state.grid[rowIndex][colIndex] = this.gamePieces.queen
 
-        return this.state;
+        return state;
     }
 
     drawer(state){
         this.setState(state);
-        return super.drawer();
+        return super.drawer(state);
     }
 
     render() {return super.render()}
